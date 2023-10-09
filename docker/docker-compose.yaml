@@ -1,0 +1,19 @@
+version: '3.7'
+
+services:
+  server:
+    build:
+      context: ../.
+      dockerfile: ./docker/server.Dockerfile
+    ports:
+      - '9000:9000'
+    restart: 'no'
+
+
+  client:
+    build:
+      context: ../.
+      dockerfile: ./docker/client.Dockerfile
+    restart: 'no'
+    depends_on:
+      - server
