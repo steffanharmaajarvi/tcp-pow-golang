@@ -1,7 +1,6 @@
 package pow
 
 import (
-	"crypto/rand"
 	"crypto/sha1"
 	"encoding/base64"
 	"encoding/binary"
@@ -60,18 +59,8 @@ func base64EncodeInt(n int) string {
 	return base64EncodeBytes([]byte(strconv.Itoa(n)))
 }
 
-func (h *Hashcash) getSalt() (string, error) {
-	buf := make([]byte, h.SaltLen)
-	_, err := rand.Read(buf)
-	if err != nil {
-		return "", err
-	}
-	salt := base64.StdEncoding.EncodeToString(buf)
-	return salt[:h.SaltLen], nil
-}
-
 func (h *Hashcash) getHeader() string {
-	return fmt.Sprintf("%s:%d:%d:%d:%s:%s", h.Extra,
+	return fmt.Sprintf("%s:%s:%d:%d:%s:%s", h.Extra,
 		h.BaseValue,
 		h.Datetime,
 		h.Zeros,
@@ -88,20 +77,21 @@ func (h *Hashcash) Check() bool {
 
 	zeroes := 64 - len(sumBits)
 
-	return uint(zeroes) >= h.Bits
+	return uint(zeroes) >= h.Bits && h.checkDate()
 }
 
 func (h *Hashcash) checkDate() bool {
-	return time.Now().Unix()-h.Datetime > hashcashDuration
+	return time.Now().Unix()-h.Datetime < hashcashDuration
 }
 
-func (h Hashcash) ComputeHashcash(maxIterations int) (Hashcash, error) {
+func (h *Hashcash) ComputeHashcash(maxIterations int) (*Hashcash, error) {
 	for h.Counter <= maxIterations || maxIterations <= 0 {
 		if h.Check() {
+			fmt.Println(h)
 			return h, nil
 		}
 		// if hash don't have needed count of leading zeros, we are increasing counter and try next hash
 		h.Counter++
 	}
-	return h, fmt.Errorf("max iterations exceeded")
+	return h, fmt.Errorf("maximum iterations exceeded")
 }

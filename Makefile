@@ -6,3 +6,6 @@ build:
 	docker-compose -f ./docker/docker-compose.yaml up --build --abort-on-container-exit --force-recreate server --build client
 install:
 	go mod download
+test:
+	go clean --testcache
+	go test ./...

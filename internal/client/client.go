@@ -54,10 +54,10 @@ func handleConnection(ctx context.Context, readerConnection io.Reader, writerCon
 		return "", fmt.Errorf("error parsing msg: %w", err)
 	}
 
-	var hashcash pow.Hashcash
+	var hashcash *pow.Hashcash
 	err = json.Unmarshal([]byte(msg.Payload), &hashcash)
 	if err != nil {
-		return "", fmt.Errorf("error parsing hashcash: %w", err, " got ", msg.Payload)
+		return "", fmt.Errorf("error parsing hashcash: %w", err)
 	}
 	fmt.Println("got hashcash: ", hashcash)
 

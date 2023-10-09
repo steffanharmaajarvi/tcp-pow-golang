@@ -142,18 +142,7 @@ func processRequestResource(ctx context.Context, message *protocol.Message, clie
 		return nil, fmt.Errorf("hashcash client mismatch")
 	}
 
-	//clock := ctx.Value("clock").(Clock)
 	storageInst := ctx.Value("storage").(Storage)
-
-	// decoding rand from base64 field in received client's hashcash
-	//randValueBytes, err := base64.StdEncoding.DecodeString()
-	//if err != nil {
-	//	return nil, fmt.Errorf("err decode rand: %w", err)
-	//}
-	//randValue, err := strconv.Atoi(string(randValueBytes))
-	//if err != nil {
-	//	return nil, fmt.Errorf("err decode rand: %w", err)
-	//}
 
 	exists, err := storageInst.Get(hashcash.BaseValue)
 	if err != nil {
